@@ -6,35 +6,17 @@
                     <h3>Todo App</h3>
 
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Content">
+                        <input type="text" class="form-control" placeholder="Content" v-model="newTodo">
                         <div class="input-group-append">
-                            <button class="btn btn-primary" type="submit">Add</button>
+                            <button class="btn btn-primary" type="submit" @click.prevent="addTodo">Add</button>
                         </div>
                     </div>
 
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox">
-                                <span class="todo-content">Buy eggs</span>
-                            </div>
-                            <span class="badge badge-danger">x</span>
-                        </li>
-                        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center todo-completed">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox">
-                                <span class="todo-content">Buy milk</span>
-                            </div>
-                            <span class="badge badge-danger">x</span>
-                        </li>
-                        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox">
-                                <span class="todo-content">Buy vegetable</span>
-                            </div>
-                            <span class="badge badge-danger">x</span>
-                        </li>
-                    </ul>
+                    <Todo :todos="todos"
+                          @toggle-complete="toggleComplete"
+                          @delete-todo="deleteTodo"
+                    >
+                    </Todo>
                 </form>
             </div>
         </div>
@@ -42,7 +24,47 @@
 </template>
 
 <script>
+import { reactive, ref } from 'vue';
+import Todo from './components/Todo.vue';
+
 export default {
-    name: 'App'
+    name: 'App',
+    components: {
+        Todo
+    },
+    setup() {
+        const newTodo = ref('');
+        const todos = reactive([]);
+
+        const addTodo = () => {
+            const todo = {
+                completed: false,
+                content: newTodo.value
+            }
+
+            todos.push(todo);
+
+            newTodo.value = '';
+        }
+
+        const toggleComplete = (index) => {
+            todos[index].completed = !todos[index].completed;
+        }
+
+        const deleteTodo = (index) => {
+            todos.splice(index, 1);
+        }
+
+        return {
+            // variables
+            todos,
+            newTodo,
+
+            // methods
+            addTodo,
+            toggleComplete,
+            deleteTodo
+        }
+    }
 }
 </script>
